@@ -192,3 +192,8 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+ai-rag.iml
+modules.xml
+profiles_settings.xml
+vcs.xml
