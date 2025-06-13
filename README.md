@@ -1,6 +1,6 @@
 # ai-rag
 RAG(Retrieval-Augmented Generation) 공부  
-AI 프로젝트 사전 준비... 러닝커브...
+AI, MCP 관련 프로젝트 사전 준비... 러닝커브...
 
 ### 강의
 [테디노트의 RAG 비법노트 : 랭체인을 활용한 GPT부터 로컬 모델까지의 RAG 가이드](https://fastcampus.co.kr/data_online_teddy)
