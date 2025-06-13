@@ -150,7 +150,7 @@
       return result
   ```
 
-### Parallel : 병렬 처리
+#### Parallel : 병렬 처리
 - **정의**: 여러 체인을 동시에 실행하고 결과를 조합하는 기능
 - **주요 특징**:
   * 독립적인 체인들을 병렬로 실행
@@ -241,3 +241,151 @@
       "format_instructions": parser.get_format_instructions()
   })
   ```
+
+## Runnable
+- **정의**: LangChain의 모든 구성 요소가 구현하는 기본 인터페이스
+- **주요 특징**:
+  * 모든 LangChain 구성 요소의 기본 클래스
+  * 동기/비동기 실행 지원
+  * 스트리밍, 배치 처리 등 다양한 실행 모드 제공
+  * 체인 구성의 기본 단위
+
+#### RunnablePassthrough
+- **정의**: 입력을 그대로 전달하거나 변환하여 다음 단계로 전달하는 유틸리티
+- **주요 기능**:
+  * 입력 데이터를 그대로 전달
+    * **주의사항**: 
+      - 딕셔너리 입력 시 전체 딕셔너리가 전달됨
+      - 예: `{'n': 3}` 입력 시 `{'n': 3}` 자체가 전달됨
+    * **해결 방법**:
+      - `operator.itemgetter` 사용: 특정 키의 값만 추출
+      - `RunnablePassthrough.assign()` 사용: 새로운 키로 매핑
+      - 람다 함수 사용: 커스텀 변환 로직 적용
+  * 입력 데이터를 변환하여 전달
+  * 여러 입력을 조합하여 전달
+- **사용 예시**:
+  ```python
+  from langchain_core.runnables import RunnablePassthrough
+  from operator import itemgetter
+  
+  # 1. 기본 사용: 입력을 그대로 전달 (주의 필요)
+  chain = RunnablePassthrough() | model
+  # 입력: {'n': 3} -> 출력: {'n': 3} (전체 딕셔너리가 전달됨)
+  
+  # 2. itemgetter 사용: 안전한 값 추출
+  chain = itemgetter("n") | model
+  # 입력: {'n': 3} -> 출력: 3 (값만 전달됨)
+  
+  # 3. assign 사용: 새로운 키로 매핑
+  chain = (
+      RunnablePassthrough.assign(
+          value=lambda x: x["n"]
+      )
+      | model
+  )
+  # 입력: {'n': 3} -> 출력: {'value': 3}
+  
+  # 4. 람다 함수 사용: 커스텀 변환
+  chain = (
+      RunnablePassthrough.assign(
+          processed=lambda x: x["n"] * 2
+      )
+      | model
+  )
+  # 입력: {'n': 3} -> 출력: {'processed': 6}
+  
+  # 5. 여러 키 처리
+  chain = (
+      RunnablePassthrough.assign(
+          sum=lambda x: x["a"] + x["b"],
+          product=lambda x: x["a"] * x["b"]
+      )
+      | model
+  )
+  # 입력: {'a': 3, 'b': 4} -> 출력: {'sum': 7, 'product': 12}
+  ```
+
+- **일반적인 사용 패턴**:
+  * 단일 값 추출: `itemgetter` 사용
+  * 값 변환: `assign`과 람다 함수 사용
+  * 여러 값 조합: `assign`에 여러 람다 함수 사용
+  * 복잡한 변환: 커스텀 함수와 `RunnableLambda` 사용
+
+- **에러 방지 팁**:
+  * 항상 입력 데이터의 구조를 확인
+  * 필요한 값만 추출하여 사용
+  * 타입 힌팅을 통한 타입 안전성 확보
+  * 예외 처리 로직 추가
+
+#### RunnableParallel
+- **정의**: 여러 체인을 병렬로 실행하고 결과를 조합하는 유틸리티
+- **주요 기능**:
+  * 독립적인 체인들을 동시에 실행
+  * 결과를 딕셔너리 형태로 조합
+  * 각 체인의 결과를 키로 구분
+- **사용 예시**:
+  ```python
+  from langchain_core.runnables import RunnableParallel
+  
+  # 여러 체인을 병렬로 실행
+  parallel_chain = RunnableParallel(
+      chain1=chain1,
+      chain2=chain2,
+      chain3=chain3
+  )
+  
+  # 결과는 딕셔너리 형태로 반환
+  result = parallel_chain.invoke({"input": "test"})
+  # 결과: {'chain1': result1, 'chain2': result2, 'chain3': result3}
+  ```
+
+#### RunnableLambda
+- **정의**: 사용자 정의 함수를 LangChain 체인에 통합하는 유틸리티
+- **주요 기능**:
+  * 사용자 정의 함수를 체인에 포함
+  * 입력 데이터 변환 및 처리
+  * 커스텀 로직 구현
+- **주의사항**:
+  * 함수는 반드시 파라미터를 가져야 함
+  * 입력/출력 타입이 명확해야 함
+  * 비동기 함수도 지원
+- **사용 예시**:
+  ```python
+  from langchain_core.runnables import RunnableLambda
+  
+  # 기본 사용
+  def add_one(x: int) -> int:
+      return x + 1
+  
+  chain = RunnableLambda(add_one) | model
+  
+  # 여러 파라미터 사용
+  def combine_inputs(data: dict) -> str:
+      return f"{data['question']} {data['context']}"
+  
+  chain = RunnableLambda(combine_inputs) | model
+  
+  # 비동기 함수 사용
+  async def async_process(data: dict) -> str:
+      # 비동기 처리 로직
+      return processed_data
+  
+  chain = RunnableLambda(async_process) | model
+  ```
+
+### Runnable 사용 시 주의사항
+1. **타입 힌팅**:
+   * 입력과 출력의 타입을 명확히 지정
+   * 타입 검사를 통한 오류 방지
+
+2. **에러 처리**:
+   * 각 단계에서 발생할 수 있는 예외 처리
+   * 적절한 에러 메시지 제공
+
+3. **성능 최적화**:
+   * 불필요한 변환 최소화
+   * 적절한 배치 처리 활용
+
+4. **테스트**:
+   * 각 Runnable 컴포넌트의 독립적 테스트
+   * 전체 체인의 통합 테스트
