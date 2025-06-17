@@ -1,5 +1,6 @@
 ```python
 from langchin_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 template = "{num1} 더하기 {num2}의 결과는?"
 ```
@@ -99,4 +100,30 @@ messages = ChatPromptTemplate.format_messages(
 # --- 2. 이렇게 연결해서 뽑거나
 # chain = prompt | llm | StrOutputParser()
 # chain.invoke({"age" : 38, "user_input" : "선생님은 몇살이세요?"}).content
+```
+
+
+## MessagePlaceHolder
+- **정의** : 미리 공간만 잡아두고 나중에 받아서 처리할 때 사용
+
+
+```python
+prompt = ChatPromptTemplate.from_messages(
+  [
+    MessagesPlaceholder(variable_name="conversation"),
+    ("human", "항상 {attitude}로 대답합니다.")
+  ]
+)
+
+chain = prompt | llm
+
+chain.invoke(
+  {
+    "attitude": "반말",
+    "conversation": [
+      ("human","4+6이 뭔지 대답해줘"),
+      ("ai", "나는 너의 수학선생님이야.")
+    ]
+  }
+)
 ```
