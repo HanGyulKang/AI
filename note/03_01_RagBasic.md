@@ -15,7 +15,7 @@
 
       `split_documents = text_splitter.split_documents(docs)`
       - 보편적으로 `RCTS`를 많이 씀.
-      - `chunk_overlap은` 단락마다 겹치는 부분을 일정부분 주는 것으로 각 분할 문장이 어색하지 않도록 한다.
+      - `chunk_overlap`은 단락마다 겹치는 부분을 일정부분 주는 것으로 각 분할 문장이 어색하지 않도록 한다.
   - **Embed**
     - **정의** : 문자 또는 문자열을 숫자로 변환한다. 왜?
     - 유사도 검사를 통해서 필요한 단락을 추출한다
