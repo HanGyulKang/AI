@@ -49,6 +49,11 @@ few_shot_examples = [
 > 더 자세한 내용은 추후에...
 
 ### SemanticSimilarityExampleSelector
+- **정의**
+  - cosine similarity(유사도 계산)
+- **한계**
+  - 유사도만으로 선택하면 너무 비슷한 예제들만 선택될 수 있음
+
 ```python
 from langchain_core.example_selectors import (
     MaxMarginalRelevanceExampleSelector,
@@ -63,14 +68,10 @@ chroma = Chroma("example_selector", OpenAIEmbeddings())
 COUNT = 1
 
 example_selector = SemanticSimilarityExampleSelector.from_examples(
-    # 선택해야할 예시
-    few_shot_examples,
-    # Embedding Class
-    OpenAIEmbeddings(),
-    # Vector Store
-    Chroma,
-    # few shot examples에서 선택할 예제 개수
-    k=COUNT,
+    few_shot_examples,  # 선택해야할 예시
+    OpenAIEmbeddings(), # Embedding Class
+    Chroma,             # Vector Store
+    k=COUNT,            # few shot examples에서 선택할 예제 개수
 )
 
 question = "서울에서 부산까지 거리는 얼마나 되나요?"
@@ -81,3 +82,44 @@ for example in selected_examples:
     print(f'question:\n{example["question"]}')
     print(f'answer:\n{example["answer"]}')
 ```
+
+### MaxMarginalRelevanceExampleSelector
+- **정의**
+  - 줄여서 **MMR**로 보통 표현 함
+  - 관련성은 유지하면서도 **다양한 관점의 예제들을 선택**함
+  - 관련성(Relavance)
+    - 검색 쿼리나 주제와 문서의 관련성을 평가 함. 문서와 주어진 쿼리의 일치성을 점수로 표현 함
+  - 다양성(Diversity)
+    - 이미 선택된 문서와의 유사성을 평가 함. 단, 선택 과정에서 문서간의 다양성을 보장 함.
+  - 알고리즘 과정
+    - 가장 관련성 높은 항목 선택
+    - 관련성이 높으면서도 차별화된 항목을 찾아 선택
+    - Lambda(λ) 계수가 작으면 다양성, 클수록 관련성을 더 많이 참고를 함.
+      - 0 ~ 1 사이인 0.5를 선택하면 관련성과 다양성을 동등하게 고려 함 (일반적으로 권장 됨)
+      - 1 : SSE와 동일
+      - 0 : 다양성만 고려
+
+##### MMR 공식
+```
+MMR = λ × Relevance(D) - (1-λ) × max(Similarity(D, D_i))
+```
+
+
+##### 사용 예시
+```python
+example_selector = MaxMarginalRelevanceExampleSelector.from_examples(
+    few_shot_examples,
+    OpenAIEmbeddings(),
+    Chroma,
+    k=2,             # 2개 예제 선택
+    fetch_k=10,      # 후보로 10개를 가져와서
+    lambda_mult=0.5  # λ=0.5로 다양성과 관련성 균형
+)
+```
+
+##### 언제 사용할까?
+- **SemanticSimilarityExampleSelector 사용 시**: k=3으로 설정했는데 너무 비슷한 예제들만 선택될 때
+- **다양한 관점이 필요할 때**: 같은 주제라도 다른 접근 방식의 예제들이 필요할 때
+- **토큰 효율성을 높이고 싶을 때**: 비슷한 예제 대신 다양한 예제로 더 많은 정보를 제공하고 싶을 때
+
+## ExampleSelector의 문제점
