@@ -45,7 +45,7 @@ chain = (
   {"context": retriever, "question": RunnablePassthrough()}
   | prompt
   | llm
-  | ...OutputParser()
+  | StrOutputParser()
 )
 
 question = "1+2는 뭐야?"
