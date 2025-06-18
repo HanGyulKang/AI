@@ -1,5 +1,6 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -17,9 +18,16 @@ split_documents = text_splitter.split_documents(docs)
 # 단계 3: 임베딩(Embedding) 생성
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-# 단계 4: DB 생성(Create DB) 및 저장
-# 벡터스토어를 생성합니다.
+# 단계 4: DB 생성(Create DB) 및 저장 : 택1
+# >> FAISS 벡터 스토어
 vectorstore = FAISS.from_documents(documents=split_documents, embedding=embeddings)
+
+# >> 또는 Chroma 벡터 스토어
+vectorstore = Chroma.from_documents(
+    documents=split_documents, 
+    embedding=embeddings,
+    persist_directory="./chroma_db"  # 영구 저장 디렉토리 추가
+)
 
 # 단계 5: 검색기(Retriever) 생성
 # 문서에 포함되어 있는 정보를 검색하고 생성합니다.
