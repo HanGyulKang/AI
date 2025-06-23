@@ -3,7 +3,7 @@ import torch
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 from langchain_huggingface import HuggingFaceEndpoint
 import librosa
-importsoundfile as sf
+import soundfile as sf
 
 class KoreanSpeechToText:
     def __init__(self, model_name="openai/whisper-large-v3", use_endpoint=False, endpoint_url=None):
