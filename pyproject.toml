@@ -92,6 +92,10 @@ mypy = "1.*"
 pinecone = "5.*"
 wikipedia = "1.*"
 scikit-learn = "1.*"
+speechrecognition = "^3.14.3"
+pydub = "^0.25.1"
+whisper-openai = "^1.0.0"
+faster-whisper = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core"]
