@@ -4,6 +4,7 @@ from pydub.effects import normalize
 from faster_whisper import WhisperModel
 from datetime import datetime
 import torch
+import glob
 
 # 전역 변수로 모델 저장 (재사용을 위해)
 _whisper_model = None
@@ -217,41 +218,63 @@ def process_multiple_files(file_paths):
     return results
 
 def main():
-    # 단일 파일 처리
-    input_file = "/Users/gooroomee/Downloads/testMp3/test9.mp3"
+    # testMp3 폴더 경로
+    input_folder = "/Users/gooroomee/Downloads/testMp3"
     
     # 출력 폴더 생성
     output_dir = "/Users/gooroomee/Downloads/audioToText"
     os.makedirs(output_dir, exist_ok=True)
     
-    # 파일명 생성
-    current_time = datetime.now()
-    timestamp = current_time.strftime("%Y%m%d%H%M%S%f")[:-3]
-    output_file = os.path.join(output_dir, f"{timestamp}.txt")
+    # testMp3 폴더에서 모든 .mp3 파일 찾기
+    mp3_files = glob.glob(os.path.join(input_folder, "*.mp3"))
     
-    # 음성 인식 실행
-    transcribed_text = convert_audio_to_text_improved(input_file)
-    
-    if transcribed_text is None:
-        print("음성 인식에 실패")
+    if not mp3_files:
+        print(f"'{input_folder}' 폴더에서 .mp3 파일을 찾을 수 없습니다.")
         return
     
-    if not transcribed_text.strip():
-        print("음성 인식 결과가 비어있음")
-        return
+    print(f"총 {len(mp3_files)}개의 .mp3 파일을 발견했습니다.")
     
-    print(f"\n총 {len(transcribed_text)} 문자")
+    # 각 파일을 순차적으로 처리
+    for i, mp3_file in enumerate(mp3_files, 1):
+        print(f"\n=== 파일 {i}/{len(mp3_files)} 처리 중 ===")
+        print(f"파일: {os.path.basename(mp3_file)}")
+        
+        # 음성 인식 실행
+        transcribed_text = convert_audio_to_text_improved(mp3_file)
+        
+        if transcribed_text is None:
+            print(f"✗ {os.path.basename(mp3_file)} 음성 인식 실패")
+            continue
+        
+        if not transcribed_text.strip():
+            print(f"✗ {os.path.basename(mp3_file)} 음성 인식 결과가 비어있음")
+            continue
+        
+        # 현재 시간을 포함한 파일명 생성
+        current_time = datetime.now()
+        timestamp = current_time.strftime("%Y%m%d%H%M%S%f")[:-3]  # 나노초까지 포함 (마이크로초 단위)
+        
+        # 원본 파일명에서 확장자 제거하고 타임스탬프와 .txt 확장자 추가
+        base_name = os.path.splitext(os.path.basename(mp3_file))[0]
+        output_file = os.path.join(output_dir, f"{base_name}_{timestamp}.txt")
+        
+        # 결과를 파일로 저장
+        try:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(f"=== {os.path.basename(mp3_file)} 음성 인식 결과 ===\n")
+                f.write(f"처리 시간: {current_time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+                f.write(transcribed_text)
+            
+            print(f"✓ {os.path.basename(mp3_file)} → {os.path.basename(output_file)}")
+            print(f"  저장 위치: {output_file}")
+            print(f"  문자 수: {len(transcribed_text)}")
+            
+        except Exception as e:
+            print(f"✗ {os.path.basename(mp3_file)} 파일 저장 중 오류: {str(e)}")
     
-    # 결과를 파일로 저장
-    try:
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(transcribed_text)
-        
-        print(f"\n텍스트 변환이 완료")
-        print(f"저장 위치: {output_file}")
-        
-    except Exception as e:
-        print(f"파일 저장 중 오류 발생: {str(e)}")
+    print(f"\n=== 모든 파일 처리 완료 ===")
+    print(f"처리된 파일 수: {len(mp3_files)}")
+    print(f"결과 저장 폴더: {output_dir}")
 
 if __name__ == "__main__":
     main() 
