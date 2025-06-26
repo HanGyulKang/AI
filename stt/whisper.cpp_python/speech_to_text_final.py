@@ -226,7 +226,7 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
     
     # testMp3 폴더에서 모든 .mp3 파일 찾기
-    mp3_files = glob.glob(os.path.join(input_folder, "*.mp3"))
+    mp3_files = glob.glob(os.path.join(input_folder, "test5.mp3"))
     
     if not mp3_files:
         print(f"'{input_folder}' 폴더에서 .mp3 파일을 찾을 수 없습니다.")
