@@ -34,7 +34,43 @@ large-v3
 large-v3-turbo
 ```
 
+##### GGML은 지원하는 모델이 더 있음
+```
+tiny
+tiny.en
+tiny-q5_1
+tiny.en-q5_1
+tiny-q8_0
+base
+base.en
+base-q5_1
+base.en-q5_1
+
+base-q8_0
+small
+small.en
+small.en-tdrz
+small-q5_1
+small.en-q5_1
+small-q8_0
+medium
+medium.en
+medium-q5_0
+medium.en-q5_0
+medium-q8_0
+large-v1
+large-v2
+large-v2-q5_0
+large-v2-q8_0
+large-v3
+large-v3-q5_0
+large-v3-turbo
+large-v3-turbo-q5_0
+large-v3-turbo-q8_0
+```
+
 6. 모델을 생성하게 되면 `whisper.cpp/models` 에 `.bin`파일로 생성 됨
 7. 그러면 `whisper-cli` 파일과 `.bin` 형식의 모델만 있으면 로컬에서 인터넷 연결 없이 `STT AI` 실행이 가능 함
 8. `CPU`나 `GPU`를 활용하는건 알아서 해주는 것으로 확인 됨
 9. 한국어 변환은 `large-v3`보다 `large-v2`가 훨씬 좋음
+10. 모델명 뒤에 tdrz 붙어있는데 화자분리 해주는 모델들인데 영문밖에 없음 ㅠ
