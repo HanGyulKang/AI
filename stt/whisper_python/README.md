@@ -50,7 +50,14 @@ model.transcribe(
 
 ---
 
-### Whisper.cpp로 실시간 음성 변환 결과
+## Whisper.cpp
+* build
+  * `git clone` 이후 `whisper.cpp` 디렉토리 안에서 `make` 명령어로 빌드
+  * 빌드 시 `CUDA`를 사용하게 하려면?
+    * `make build CMAKE_ARGS="-DGGML_CUDA=1 -DCMAKE_CUDA_ARCHITECTURES=89 -DGGML_CUDA_F16=1"`
+    * 단, CUDA Toolkit 프로그램 필수
+
+### 실시간 음성 변환 결과
 * [실시간 변환 코드](./speech_to_text_whisper.cpp.py)
 * 실행 방법 : `python speech_to_text_whisper.cpp.py --realtime`
 * 결과
