@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import torchaudio
 import torch
 import subprocess
+from pydub import AudioSegment
+from pydub.effects import low_pass_filter
 
 # .env 파일 로드
 load_dotenv()
@@ -75,10 +77,24 @@ try:
         waveform = resampler(waveform)
         print(f"변환 완료 - 새로운 길이: {waveform.shape[1]} 샘플")
     
-    # 임시 WAV 파일로 저장 (pyannote가 더 안정적으로 처리)
+    # 임시 WAV 파일로 저장 (pydub 처리를 위해)
     temp_wav_file = os.path.join(current_dir, "temp_audio.wav")
     torchaudio.save(temp_wav_file, waveform, target_sample_rate)
-    print(f"임시 WAV 파일 생성: {temp_wav_file}")
+    
+    # pydub를 사용한 Low-pass filter 적용 (3000Hz) - 노이즈 제거
+    print("Low-pass filter 적용 중 (3000Hz)...")
+    audio_segment = AudioSegment.from_wav(temp_wav_file)
+    filtered_audio = low_pass_filter(audio_segment, 3000)
+    print("Low-pass filter 적용 완료")
+    
+    # 볼륨 증폭 (5dB)
+    print("볼륨을 5dB 증폭 중...")
+    filtered_audio = filtered_audio + 5
+    print("볼륨 증폭 완료")
+    
+    # 필터링된 오디오를 다시 WAV 파일로 저장
+    filtered_audio.export(temp_wav_file, format="wav")
+    print(f"필터링된 WAV 파일 저장: {temp_wav_file}")
     
     # 화자 분리 실행
     diarization = pipeline(temp_wav_file)

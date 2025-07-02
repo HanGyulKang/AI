@@ -7060,6 +7060,31 @@ files = [
 pyasn1 = ">=0.6.1,<0.7.0"
 
 [[package]]
+name = "pyaudio"
+version = "0.2.14"
+description = "Cross-platform audio I/O with PortAudio"
+optional = false
+python-versions = "*"
+files = [
+    {file = "PyAudio-0.2.14-cp310-cp310-win32.whl", hash = "sha256:126065b5e82a1c03ba16e7c0404d8f54e17368836e7d2d92427358ad44fefe61"},
+    {file = "PyAudio-0.2.14-cp310-cp310-win_amd64.whl", hash = "sha256:2a166fc88d435a2779810dd2678354adc33499e9d4d7f937f28b20cc55893e83"},
+    {file = "PyAudio-0.2.14-cp311-cp311-win32.whl", hash = "sha256:506b32a595f8693811682ab4b127602d404df7dfc453b499c91a80d0f7bad289"},
+    {file = "PyAudio-0.2.14-cp311-cp311-win_amd64.whl", hash = "sha256:bbeb01d36a2f472ae5ee5e1451cacc42112986abe622f735bb870a5db77cf903"},
+    {file = "PyAudio-0.2.14-cp312-cp312-win32.whl", hash = "sha256:5fce4bcdd2e0e8c063d835dbe2860dac46437506af509353c7f8114d4bacbd5b"},
+    {file = "PyAudio-0.2.14-cp312-cp312-win_amd64.whl", hash = "sha256:12f2f1ba04e06ff95d80700a78967897a489c05e093e3bffa05a84ed9c0a7fa3"},
+    {file = "PyAudio-0.2.14-cp313-cp313-win32.whl", hash = "sha256:95328285b4dab57ea8c52a4a996cb52be6d629353315be5bfda403d15932a497"},
+    {file = "PyAudio-0.2.14-cp313-cp313-win_amd64.whl", hash = "sha256:692d8c1446f52ed2662120bcd9ddcb5aa2b71f38bda31e58b19fb4672fffba69"},
+    {file = "PyAudio-0.2.14-cp38-cp38-win32.whl", hash = "sha256:858caf35b05c26d8fc62f1efa2e8f53d5fa1a01164842bd622f70ddc41f55000"},
+    {file = "PyAudio-0.2.14-cp38-cp38-win_amd64.whl", hash = "sha256:2dac0d6d675fe7e181ba88f2de88d321059b69abd52e3f4934a8878e03a7a074"},
+    {file = "PyAudio-0.2.14-cp39-cp39-win32.whl", hash = "sha256:f745109634a7c19fa4d6b8b7d6967c3123d988c9ade0cd35d4295ee1acdb53e9"},
+    {file = "PyAudio-0.2.14-cp39-cp39-win_amd64.whl", hash = "sha256:009f357ee5aa6bc8eb19d69921cd30e98c42cddd34210615d592a71d09c4bd57"},
+    {file = "PyAudio-0.2.14.tar.gz", hash = "sha256:78dfff3879b4994d1f4fc6485646a57755c6ee3c19647a491f790a0895bd2f87"},
+]
+
+[package.extras]
+test = ["numpy"]
+
+[[package]]
 name = "pyclipper"
 version = "1.3.0.post6"
 description = "Cython wrapper for the C++ translation of the Angus Johnson's Clipper library (ver. 6.4.2)"
@@ -9074,6 +9099,26 @@ files = [
 ]
 
 [[package]]
+name = "sounddevice"
+version = "0.5.2"
+description = "Play and Record Sound with Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "sounddevice-0.5.2-py3-none-any.whl", hash = "sha256:82375859fac2e73295a4ab3fc60bd4782743157adc339561c1f1142af472f505"},
+    {file = "sounddevice-0.5.2-py3-none-macosx_10_6_x86_64.macosx_10_6_universal2.whl", hash = "sha256:943f27e66037d41435bdd0293454072cdf657b594c9cde63cd01ee3daaac7ab3"},
+    {file = "sounddevice-0.5.2-py3-none-win32.whl", hash = "sha256:3a113ce614a2c557f14737cb20123ae6298c91fc9301eb014ada0cba6d248c5f"},
+    {file = "sounddevice-0.5.2-py3-none-win_amd64.whl", hash = "sha256:e18944b767d2dac3771a7771bdd7ff7d3acd7d334e72c4bedab17d1aed5dbc22"},
+    {file = "sounddevice-0.5.2.tar.gz", hash = "sha256:c634d51bd4e922d6f0fa5e1a975cc897c947f61d31da9f79ba7ea34dff448b49"},
+]
+
+[package.dependencies]
+CFFI = ">=1.0"
+
+[package.extras]
+numpy = ["NumPy"]
+
+[[package]]
 name = "soundfile"
 version = "0.13.1"
 description = "An audio library based on libsndfile, CFFI and NumPy"
@@ -10551,6 +10596,19 @@ files = [
 ]
 
 [[package]]
+name = "webrtcvad"
+version = "2.0.10"
+description = "Python interface to the Google WebRTC Voice Activity Detector (VAD)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "webrtcvad-2.0.10.tar.gz", hash = "sha256:f1bed2fb25b63fb7b1a55d64090c993c9c9167b28485ae0bcdd81cf6ede96aea"},
+]
+
+[package.extras]
+dev = ["check-manifest", "memory_profiler", "nose", "psutil", "unittest2", "zest.releaser"]
+
+[[package]]
 name = "websocket-client"
 version = "1.8.0"
 description = "WebSocket client for Python with low level API options"
@@ -11190,4 +11248,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "ea35386730b960d5423ec57f8048b2f9cbde78c65a7b33acc3a6b900c90fe0d2"
+content-hash = "117c66097fe67221411dc1a19058e2d8a83e43d480eed6fb8462dccc8f020e14"
