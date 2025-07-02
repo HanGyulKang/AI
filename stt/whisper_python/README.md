@@ -52,5 +52,6 @@ model.transcribe(
 
 ### Whisper.cpp로 실시간 음성 변환 결과
 * [실시간 변환 코드](./speech_to_text_whisper.cpp.py)
+* 실행 방법 : `python speech_to_text_whisper.cpp.py --realtime`
 * 결과
 ![](./image/whisper.cpp-realtime.png)
