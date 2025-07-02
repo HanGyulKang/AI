@@ -197,3 +197,8 @@ ai-rag.iml
 modules.xml
 profiles_settings.xml
 vcs.xml
+
+/stt/pyannote/test.audio/*.mp3
+/stt/pyannote/.env
+/stt/pyannote/whisper.cpp_local/whisper-cli
+/stt/pyannote/whisper.cpp_local/model/*.bin
