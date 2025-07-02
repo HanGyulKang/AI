@@ -47,3 +47,10 @@ model.transcribe(
 | -0.6 ~ -0.3 | 보통 | 검토 권장 |
 | -1.0 ~ -0.6 | 낮음 | 수동 검토 필요 |
 | -1.0 이하 | 매우 낮음 | 재녹음 또는 다른 방법 고려 |
+
+---
+
+### Whisper.cpp로 실시간 음성 변환 결과
+* [실시간 변환 코드](./speech_to_text_whisper.cpp.py)
+* 결과
+![](./image/whisper.cpp-realtime.png)
