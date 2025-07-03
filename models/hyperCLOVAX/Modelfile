@@ -1,0 +1,14 @@
+FROM ./HyperCLOVAX-SEED-Text-Instruct-1.5B-gguf-bf16.gguf
+
+TEMPLATE """{{ if .System }}<|system|>
+{{ .System }}<|endofturn|>
+{{ end }}{{ if .Prompt }}<|user|>
+{{ .Prompt }}<|endofturn|>
+{{ end }}<|assistant|>
+{{ .Response }}<|endofturn|>"""
+
+PARAMETER stop "<|endofturn|>"
+PARAMETER stop "<|stop|>"
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER top_k 40
