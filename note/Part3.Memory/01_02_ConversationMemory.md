@@ -1,4 +1,13 @@
-# ConversationBufferMemory
+# LLM이 대화를 기억하는 방법론
+
+<br>
+
+* 메모리에 담기
+
+<details>
+<summary>ConversationBufferMemory</summary>
+
+## ConversationBufferMemory
 
 ---
 
@@ -46,8 +55,16 @@ memory.load_memory_variables({})["history"]
  HumanMessage(content='안녕하세요. 12*3은 뭔가요?', additional_kwargs={}, response_metadata={}),
  AIMessage(content='12*3은 36입니다.', additional_kwargs={}, response_metadata={})]
 ```
+</details>
 
-# ConversationBufferWindowMemory
+<br><br>
+
+* 메모리에 담되 **주고 받은 대화**(`Window`) 개수를 지정해서 담기
+
+<details>
+<summary>ConversationBufferWindowMemory</summary>
+
+## ConversationBufferWindowMemory
 
 ---
 
@@ -62,8 +79,16 @@ memory = ConversationBufferWindowMemory(k=2, return_messages=True)
 ```
 여기에서 `k`가 `Window`의 개수이다.  
 해당 기능으로 오래된 대화를 적절하게 제거해주고 최근 대화 기준으로 대화를 이어갈 수 있는 장점이 있다.
+</details>
 
-# ConversationTokenBufferMemory
+<br><br>
+
+* 메모리에 담되 `Token`길이 기준으로 최근 대화만 담기
+
+<details>
+<summary>ConversationTokenBufferMemory</summary>
+
+## ConversationTokenBufferMemory
 
 ---
 
@@ -81,9 +106,16 @@ memory = ConversationTokenBufferMemory(
     return_messages=True
 )
 ```
+</details>
 
+<br><br>
 
-# ConversationEntityMemory
+* `Entity`, 다시 말해 특정 정보 기준으로 대화 저장하기
+
+<details>
+<summary>ConversationEntityMemory</summary>
+
+## ConversationEntityMemory
 
 ---
 
@@ -112,7 +144,16 @@ print(conversation.memory.entity_store.store)
 }
 ```
 
-# ConversationKGMemory
+</details>
+
+<br><br>
+
+* `KG`(Knowledge Graph: 지식그래프) 망으로 맥락 기반 정보 저장하기
+
+<details>
+<summary>ConversationKGMemory</summary>
+
+## ConversationKGMemory
 
 ---
 
@@ -124,7 +165,16 @@ print(conversation.memory.entity_store.store)
 
 [예제 코드](../code/ConversationKGMemory.py)
 
-# ConversationSummaryMemory, ConversationSummaryBufferMemory
+</details>
+
+<br><br>
+
+* 요약해서 저장하기
+
+<details>
+<summary>ConversationSummaryMemory, ConversationSummaryBufferMemory</summary>
+
+## ConversationSummaryMemory, ConversationSummaryBufferMemory
 
 ---
 
@@ -154,3 +204,5 @@ memory = ConversationSummaryBufferMemory(
 ```python
 print(memory.load_memory_variables({})["history"])
 ```
+
+</details>
