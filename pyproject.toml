@@ -100,6 +100,7 @@ pyannote-audio = "^3.3.2"
 pyaudio = "^0.2.14"
 webrtcvad = "^2.0.10"
 sounddevice = "^0.5.2"
+transformers = "^4.53.0"
 
 [build-system]
 requires = ["poetry-core"]
