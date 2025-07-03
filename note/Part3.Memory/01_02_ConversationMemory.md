@@ -123,3 +123,34 @@ print(conversation.memory.entity_store.store)
 * `Entity` 메모리와 비슷함
 
 [예제 코드](../code/ConversationKGMemory.py)
+
+# ConversationSummaryMemory, ConversationSummaryBufferMemory
+
+---
+
+* 말 그대로 **요약본**을 만드는 메모리
+  * SummaryMemory : 즉시 요약
+  * SummaryBufferMemory : 개발자가 설정한 일정 수준(`token`개수로 설정) 이후 요약
+* `Entity`나 `KG` 메모리의 경우 자칫 정보가 누락될 수도 있음
+
+```python
+from langchain.memory import ConversationSummaryMemory
+from langchain.memory import ConversationSummaryBufferMemory
+from langchain_ollama import ChatOllama # ChatOpenAI는 비용이 들어서... ㅋㅋ
+
+memory = ConversationSummaryMemory(
+    llm=ChatOllama(model="llava:latest", temperature=0), return_messages=True
+)
+
+# Token 개수 기준으로 요약을 하지 않기 떄문에 더 효율적
+memory = ConversationSummaryBufferMemory(
+    llm=ChatOllama(model="llava:latest", temperature=0),
+    max_token_limit=200,  # 요약의 기준이 되는 토큰 길이를 설정
+    return_messages=True,
+)
+```
+
+* 요약 내역 출력
+```python
+print(memory.load_memory_variables({})["history"])
+```
