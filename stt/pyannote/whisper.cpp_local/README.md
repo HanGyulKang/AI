@@ -194,7 +194,7 @@ make build-smart  # 권장: 시스템 자동 감지
 ### 권장사항
 
 - 오프라인 환경 배포 시: Windows 환경에서 정적 빌드 후 배포
-- 한국어 인식: `large-v2` 모델 사용 권장
+- 한국어 인식: `large-v2` 모델 혹은 양자화 모델 `large-v2-q8_0` 추천
 - GPU 가속: CUDA Toolkit 설치 후 `make build-cuda` 사용
 
 ---
