@@ -58,7 +58,6 @@ def main():
     output_file = os.path.join(output_dir, "transcribed_text_offline.txt")
     
     print("오프라인 음성 인식으로 텍스트 변환 중...")
-    print("(Faster Whisper 모델을 사용하여 인터넷 없이도 작동합니다)")
     
     # 음성 인식으로 텍스트 변환
     transcribed_text = convert_audio_to_text_offline(input_file)

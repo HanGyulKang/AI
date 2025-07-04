@@ -1,6 +1,6 @@
 import os
 from pydub import AudioSegment
-from pydub.effects import normalize
+from pydub.effects import normalize, low_pass_filter
 from faster_whisper import WhisperModel
 from datetime import datetime
 import torch
@@ -53,7 +53,7 @@ def get_whisper_model():
 
 def preprocess_audio(audio):
     """
-    오디오 전처리 함수 (whisper.cpp 최적화)
+    오디오 전처리 함수 (노이즈 제거 및 음량 최적화)
     """
     # 스테레오를 모노로 변환 (음성 인식에 더 적합)
     if audio.channels == 2:
@@ -69,14 +69,20 @@ def preprocess_audio(audio):
     print("오디오 정규화 중...")
     audio = normalize(audio)
     
-    # whisper.cpp 스타일 볼륨 조정 (더 보수적)
-    audio = audio + 10  # 10dB 증가 (whisper.cpp 스타일)
+    # Low-pass filter 적용 (3000Hz) - 노이즈 제거
+    print("Low-pass filter 적용 중 (3000Hz)...")
+    audio = low_pass_filter(audio, 3000)
+    print("Low-pass filter 적용 완료")
+    
+    # 음량 5dB 증가 (더 정확한 인식을 위해)
+    print("음량을 5dB 증가 중...")
+    audio = audio + 5  # 5dB 증가
     
     return audio
 
 def convert_audio_to_text_improved(audio_file_path):
     """
-    개선된 오디오 파일을 텍스트로 변환하는 함수 (whisper.cpp 최적화 적용)
+    개선된 오디오 파일을 텍스트로 변환하는 함수 (노이즈 제거 및 음량 최적화)
     """
     # 오디오 파일 확장자 확인
     file_extension = os.path.splitext(audio_file_path)[1].lower()
@@ -86,7 +92,7 @@ def convert_audio_to_text_improved(audio_file_path):
         return None
     
     # 임시 WAV 파일 경로
-    temp_wav_path = "/tmp/temp_audio_whisper_cpp_optimized.wav"
+    temp_wav_path = "/tmp/temp_audio_optimized.wav"
     
     try:
         print("오디오 파일 로딩 중...")
@@ -113,19 +119,19 @@ def convert_audio_to_text_improved(audio_file_path):
         print(f"  - 채널: {audio.channels}개")
         print(f"  - 샘플레이트: {audio.frame_rate}Hz")
         
-        # WAV 파일로 저장 (whisper.cpp 최적화)
+        # WAV 파일로 저장
         print("WAV 파일로 변환 중...")
         audio.export(temp_wav_path, format="wav", parameters=["-ar", "16000"])
         
         # 모델 가져오기 (재사용)
         model = get_whisper_model()
         
-        # whisper.cpp 스타일 최적화된 음성 인식 옵션
-        print("음성 인식 실행 중... (whisper.cpp 최적화 적용)")
+        # 최적화된 음성 인식 옵션
+        print("음성 인식 실행 중... (노이즈 제거 및 음량 최적화 적용)")
         segments, info = model.transcribe(
             temp_wav_path, 
             language="ko",
-            # 노래 인식을 위한 최적화된 파라미터들
+            # 정확한 인식을 위한 최적화된 파라미터들
             beam_size=5,  # 더 정확한 인식을 위해 증가
             best_of=5,    # 더 많은 후보 검토
             temperature=0.0,  # 결정적 결과 유지
@@ -137,7 +143,7 @@ def convert_audio_to_text_improved(audio_file_path):
                 min_silence_duration_ms=1000,  # 1초로 증가 (노래 중간 휴식 허용)
                 speech_pad_ms=300  # 0.3초로 감소
             ),
-            # 노래 인식을 위한 임계값 조정
+            # 노이즈 제거를 위한 임계값 조정
             compression_ratio_threshold=2.4,  # 압축 비율 임계값
             no_speech_threshold=0.3,  # 무음 임계값 낮춤 (0.6 → 0.3)
             # 반복 패널티 완화
@@ -149,12 +155,12 @@ def convert_audio_to_text_improved(audio_file_path):
             max_initial_timestamp=1.0,  # 초기 타임스탬프 최대값
         )
         
-        # 결과 텍스트 수집 (whisper.cpp 스타일)
+        # 결과 텍스트 수집
         text = ""
         confidence_scores = []
         segment_count = 0
         
-        print("\n=== 세그먼트별 인식 결과 (whisper.cpp 최적화) ===")
+        print("\n=== 세그먼트별 인식 결과 (노이즈 제거 및 음량 최적화) ===")
         prev_end = 0.0
         for i, segment in enumerate(segments):
             segment_text = segment.text.strip()
@@ -218,62 +224,57 @@ def process_multiple_files(file_paths):
     return results
 
 def main():
-    # testMp3 폴더 경로
-    input_folder = "/Users/gooroomee/Downloads/testMp3"
+    # 특정 MP3 파일 경로 (여기서 원하는 파일 경로로 변경하세요)
+    target_mp3_file = "/Users/gooroomee/Downloads/testMp3/test5.mp3"
     
     # 출력 폴더 생성
     output_dir = "/Users/gooroomee/Downloads/audioToText"
     os.makedirs(output_dir, exist_ok=True)
     
-    # testMp3 폴더에서 모든 .mp3 파일 찾기
-    mp3_files = glob.glob(os.path.join(input_folder, "test5.mp3"))
-    
-    if not mp3_files:
-        print(f"'{input_folder}' 폴더에서 .mp3 파일을 찾을 수 없습니다.")
+    # 파일 존재 여부 확인
+    if not os.path.exists(target_mp3_file):
+        print(f"파일을 찾을 수 없습니다: {target_mp3_file}")
         return
     
-    print(f"총 {len(mp3_files)}개의 .mp3 파일을 발견했습니다.")
+    print(f"=== 단일 MP3 파일 처리 ===")
+    print(f"대상 파일: {os.path.basename(target_mp3_file)}")
+    print(f"파일 경로: {target_mp3_file}")
     
-    # 각 파일을 순차적으로 처리
-    for i, mp3_file in enumerate(mp3_files, 1):
-        print(f"\n=== 파일 {i}/{len(mp3_files)} 처리 중 ===")
-        print(f"파일: {os.path.basename(mp3_file)}")
-        
-        # 음성 인식 실행
-        transcribed_text = convert_audio_to_text_improved(mp3_file)
-        
-        if transcribed_text is None:
-            print(f"✗ {os.path.basename(mp3_file)} 음성 인식 실패")
-            continue
-        
-        if not transcribed_text.strip():
-            print(f"✗ {os.path.basename(mp3_file)} 음성 인식 결과가 비어있음")
-            continue
-        
-        # 현재 시간을 포함한 파일명 생성
-        current_time = datetime.now()
-        timestamp = current_time.strftime("%Y%m%d%H%M%S%f")[:-3]  # 나노초까지 포함 (마이크로초 단위)
-        
-        # 원본 파일명에서 확장자 제거하고 타임스탬프와 .txt 확장자 추가
-        base_name = os.path.splitext(os.path.basename(mp3_file))[0]
-        output_file = os.path.join(output_dir, f"{base_name}_{timestamp}.txt")
-        
-        # 결과를 파일로 저장
-        try:
-            with open(output_file, 'w', encoding='utf-8') as f:
-                f.write(f"=== {os.path.basename(mp3_file)} 음성 인식 결과 ===\n")
-                f.write(f"처리 시간: {current_time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-                f.write(transcribed_text)
-            
-            print(f"✓ {os.path.basename(mp3_file)} → {os.path.basename(output_file)}")
-            print(f"  저장 위치: {output_file}")
-            print(f"  문자 수: {len(transcribed_text)}")
-            
-        except Exception as e:
-            print(f"✗ {os.path.basename(mp3_file)} 파일 저장 중 오류: {str(e)}")
+    # 음성 인식 실행
+    transcribed_text = convert_audio_to_text_improved(target_mp3_file)
     
-    print(f"\n=== 모든 파일 처리 완료 ===")
-    print(f"처리된 파일 수: {len(mp3_files)}")
+    if transcribed_text is None:
+        print(f"✗ {os.path.basename(target_mp3_file)} 음성 인식 실패")
+        return
+    
+    if not transcribed_text.strip():
+        print(f"✗ {os.path.basename(target_mp3_file)} 음성 인식 결과가 비어있음")
+        return
+    
+    # 현재 시간을 포함한 파일명 생성
+    current_time = datetime.now()
+    timestamp = current_time.strftime("%Y%m%d%H%M%S%f")[:-3]  # 나노초까지 포함 (마이크로초 단위)
+    
+    # 원본 파일명에서 확장자 제거하고 타임스탬프와 .txt 확장자 추가
+    base_name = os.path.splitext(os.path.basename(target_mp3_file))[0]
+    output_file = os.path.join(output_dir, f"{base_name}_{timestamp}.txt")
+    
+    # 결과를 파일로 저장
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(f"=== {os.path.basename(target_mp3_file)} 음성 인식 결과 ===\n")
+            f.write(f"처리 시간: {current_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"적용된 최적화: Low-pass filter (3000Hz), 음량 +5dB\n\n")
+            f.write(transcribed_text)
+        
+        print(f"✓ {os.path.basename(target_mp3_file)} → {os.path.basename(output_file)}")
+        print(f"  저장 위치: {output_file}")
+        print(f"  문자 수: {len(transcribed_text)}")
+        
+    except Exception as e:
+        print(f"✗ {os.path.basename(target_mp3_file)} 파일 저장 중 오류: {str(e)}")
+    
+    print(f"\n=== 파일 처리 완료 ===")
     print(f"결과 저장 폴더: {output_dir}")
 
 if __name__ == "__main__":
