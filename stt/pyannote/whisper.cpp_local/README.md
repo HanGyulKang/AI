@@ -162,6 +162,11 @@ make build-smart  # 권장: 시스템 자동 감지
 ./whisper-cli -l ko -m models/{model-name}.bin -f {path}/{audio-file-name}.{extension}
 ```
 
+`-l` : 언어 (en, ko 기타 등등)
+`-m` : 모델
+`-f` : 변환할 음성 파일
+`-DBUILD_SHARED_LIBS=OFF` : 정적 빌드
+
 ### 예시
 
 ```bash
