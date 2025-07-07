@@ -203,3 +203,5 @@ vcs.xml
 /stt/pyannote/whisper.cpp_local/whisper-cli
 /stt/pyannote/whisper.cpp_local/model/*.bin
 /models/**/*.gguf
+/pyannote/whisper.cpp_web/web.service/whisper-cli
+/pyannote/whisper.cpp_web/web.service/model/*.bin
