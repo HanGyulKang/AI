@@ -20,4 +20,5 @@ AI, MCP 관련 프로젝트 사전 준비... 러닝커브...
 
 ##### [테디](./note/README.md)
 ##### [Whisper CPP](./stt/pyannote/whisper.cpp_local/README.md)
+##### [Whisper WEB](./stt/pyannote/whisper.cpp_web/web.service/README.md)
 ##### [Faster Whisper](./stt/whisper_python/README.md)
