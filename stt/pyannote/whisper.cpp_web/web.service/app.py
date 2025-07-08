@@ -6,6 +6,8 @@ import threading
 import time
 import queue
 from pathlib import Path
+from pydub import AudioSegment
+from pydub.effects import normalize, low_pass_filter
 
 # 페이지 설정
 st.set_page_config(
@@ -23,6 +25,35 @@ global_result_queue = queue.Queue()
 global_result_ready = False
 global_result_data = None
 global_result_type = None
+
+def preprocess_audio(audio):
+    """
+    오디오 전처리 함수 (노이즈 제거 및 음량 최적화)
+    """
+    # 스테레오를 모노로 변환 (음성 인식에 더 적합)
+    if audio.channels == 2:
+        print("스테레오를 모노로 변환 중...")
+        audio = audio.set_channels(1)
+    
+    # 샘플레이트를 16kHz로 변환 (Whisper 모델에 최적화)
+    if audio.frame_rate != 16000:
+        print(f"샘플레이트를 16kHz로 변환 중... (현재: {audio.frame_rate}Hz)")
+        audio = audio.set_frame_rate(16000)
+    
+    # 오디오 정규화 (볼륨 레벨 조정)
+    print("오디오 정규화 중...")
+    audio = normalize(audio)
+    
+    # Low-pass filter 적용 (3000Hz) - 노이즈 제거
+    print("Low-pass filter 적용 중 (3000Hz)...")
+    audio = low_pass_filter(audio, 3000)
+    print("Low-pass filter 적용 완료")
+    
+    # 음량 5dB 증가 (더 정확한 인식을 위해)
+    print("음량을 5dB 증가 중...")
+    audio = audio + 5  # 5dB 증가
+    
+    return audio
 
 # 사이드바 설정
 with st.sidebar:
@@ -69,6 +100,20 @@ with col2:
         file_size = len(uploaded_file.getvalue()) / (1024 * 1024)  # MB
         st.info(f"📄 파일명: {uploaded_file.name}")
         st.info(f"📊 파일 크기: {file_size:.2f} MB")
+        
+        # 오디오 정보 표시
+        try:
+            # 임시 파일로 저장하여 오디오 정보 확인
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.name.split('.')[-1]}") as tmp_file:
+                tmp_file.write(uploaded_file.getvalue())
+                tmp_file_path = tmp_file.name
+            
+            audio = AudioSegment.from_file(tmp_file_path)
+            
+            # 임시 파일 삭제
+            os.unlink(tmp_file_path)
+        except Exception as e:
+            st.warning(f"오디오 정보를 읽을 수 없습니다: {e}")
     else:
         st.info("파일을 업로드하면 여기에 음원 재생기가 표시됩니다")
 
@@ -153,12 +198,34 @@ def process_audio_file(file_path, language):
         if not model_path.exists():
             raise FileNotFoundError(f"모델 파일을 찾을 수 없습니다: {model_path}")
         
+        # 오디오 전처리 적용
+        print("오디오 전처리 시작...")
+        audio = AudioSegment.from_file(file_path)
+        
+        # 전처리 전 정보 출력
+        print(f"전처리 전 - 길이: {len(audio)/1000:.1f}초, 채널: {audio.channels}개, 샘플레이트: {audio.frame_rate}Hz")
+        
+        # 오디오 전처리 적용
+        audio = preprocess_audio(audio)
+        
+        # 전처리 후 정보 출력
+        print(f"전처리 후 - 길이: {len(audio)/1000:.1f}초, 채널: {audio.channels}개, 샘플레이트: {audio.frame_rate}Hz")
+        
+        # 전처리된 오디오를 임시 WAV 파일로 저장
+        temp_processed_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        audio.export(temp_processed_file.name, format="wav", parameters=["-ar", "16000"])
+        temp_processed_file.close()
+        
+        # 전처리된 파일 경로 사용
+        input_file_path = temp_processed_file.name
+        print(f"전처리된 파일 저장: {input_file_path}")
+        
         # whisper-cli 실행
         cmd = [
             str(whisper_cli_path),
             "-l", language,
             "-m", str(model_path),
-            "-f", file_path
+            "-f", input_file_path
         ]
         
         # 명령어 로깅 (디버깅용)
@@ -197,8 +264,16 @@ def process_audio_file(file_path, language):
 
         process.wait()
         
+        # 전처리된 임시 파일 정리
+        if os.path.exists(input_file_path):
+            try:
+                os.unlink(input_file_path)
+                print("전처리된 임시 파일 정리 완료")
+            except:
+                pass
+        
         if process.returncode == 0:
-        # 전역 변수에 결과 저장
+            # 전역 변수에 결과 저장
             result_text = "".join(transcription_lines)
             global_result_data = result_text
             global_result_type = "success"
