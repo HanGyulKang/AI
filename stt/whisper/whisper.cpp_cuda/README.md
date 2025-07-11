@@ -36,7 +36,7 @@
   * **Visual Studio**
     * C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\b
 
-### #. Whisper 실행
+### 3. Whisper 실행
 * 기존 `Makefile` 코드 수정 필요
 * 한 줄로 적으면 됨
 * 예시의 모든 경로는 사용자 PC환경에 따라 달라질 수 있음
