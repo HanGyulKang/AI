@@ -198,11 +198,10 @@ modules.xml
 profiles_settings.xml
 vcs.xml
 
-/stt/pyannote/test.audio/*.mp3
-/stt/pyannote/.env
-/stt/pyannote/whisper.cpp_local/whisper-cli
-/stt/pyannote/whisper.cpp_local/model/*.bin
-/stt/pyannote/whisper.cpp_web/web.service/whisper-cli
-/stt/pyannote/whisper.cpp_web/model/*.bin
 
-/models/**/*.gguf
+/stt/pyannote/.env
+
+**.gguf
+**.bin
+**.mp3
+whisper-cli

@@ -1,8 +1,10 @@
-# ai-rag
+## ai-rag
 RAG(Retrieval-Augmented Generation) 공부  
 AI, MCP 관련 프로젝트 사전 준비... 러닝커브...
 
-# 강의
+<br><br>
+
+## 강의
 
 ---
 
@@ -13,12 +15,15 @@ AI, MCP 관련 프로젝트 사전 준비... 러닝커브...
 * [환경설정(MAC)](https://teddynote.com/10-RAG%EB%B9%84%EB%B2%95%EB%85%B8%ED%8A%B8/%ED%99%98%EA%B2%BD%20%EC%84%A4%EC%A0%95%20(Mac)/)
 * [LangChain](https://smith.langchain.com/)
 
+<br><br>
 
-# 개인 공부
+## 개인 공부 목차
 
 ---
 
-##### [테디](./note/README.md)
-##### [Whisper CPP](./stt/pyannote/whisper.cpp_local/README.md)
-##### [Whisper WEB](./stt/pyannote/whisper.cpp_web/web.service/README.md)
-##### [Faster Whisper](./stt/whisper_python/README.md)
+### 1. [테디 강의](./note/README.md)
+### 2. Whisper 시리즈
+- [Whisper CPP](./stt/whisper/whisper.cpp_local/README.md)
+- [Whisper CPP + CUDA](./stt/whisper/whisper.cpp_cuda/README.md)
+- [Whisper WEB](./stt/whisper/whisper.cpp_web/web.service/README.md)
+- [Faster Whisper](./stt/whisper/whisper_python/README.md)
