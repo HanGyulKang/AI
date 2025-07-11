@@ -168,7 +168,14 @@ try:
             "./whisper.cpp_local/whisper-cli",
             "-l", "ko",
             "-m", "./whisper.cpp_local/model/ggml-large-v2-q8_0.bin",
-            speaker_file
+            "-nt",
+            "--vad",
+            "--vad-model", "./whisper.cpp_local/model/ggml-silero-v5.1.2.bin",
+            "--vad-threshold", "0.3",                    # 더 민감한 음성 감지
+            "--vad-min-speech-duration-ms", "2000",      # 2초 이상 음성만 인식
+            "--vad-min-silence-duration-ms", "1000",     # 1초 이상 무음으로 구분
+            "--vad-speech-pad-ms", "500",                # 음성 구간 앞뒤 0.5초 패딩
+            "-f", speaker_file
         ]
         
         try:
