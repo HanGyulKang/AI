@@ -198,10 +198,22 @@ modules.xml
 profiles_settings.xml
 vcs.xml
 
+# Whisper
+/stt/whisper/test.audio
+/stt/whisper/speakers_output
+/stt/whisper/speakers_output_text
 
-/stt/pyannote/.env
-
-**.gguf
-**.bin
-**.mp3
+*.gguf
+*.bin
+*.mp3
+*.wav
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.flv
+*.wmv
+*.m4a
+*.m4v
+*.m4b
 whisper-cli
